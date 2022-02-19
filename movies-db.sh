@@ -12,7 +12,7 @@ git add .
 
 # commit
 
-git commit -m date
+git commit -m "new back up"
 
 # push
 

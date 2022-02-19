@@ -12,7 +12,7 @@ git add .
 
 # commit
 
-git commit -m "new db backup"
+git commit -m date
 
 # push
 

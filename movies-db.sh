@@ -15,6 +15,5 @@ git add .
 git commit -m "new db backup"
 
 # push
-
-git push https://charan379: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@github.com/charan379/movies_db_backup.git --all
+git push --all
 

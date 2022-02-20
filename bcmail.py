@@ -14,9 +14,38 @@ from email import encoders
 
 runparam = sys.argv[1]
 
-#Mailer
-
-def sendmail():
+def backuper (db_host, db_name, db_user, db_pass, backup_path, arc_arg, hide_pass):
+    print ("============================================================================")
+    print ("Using current settings: ")
+    print ("Database Host: " + db_host)
+    print ("Database Name: " + db_name)
+    print ("Database User: " + db_user)
+    if (hide_pass == "true"):
+        print ("Database User Password: ************")
+    elif (hide_pass == "false"):
+        print ("Database User Password: " + db_pass)
+    else:
+        print ("***hide_pass argument is invalid, not printing password***")
+        print ("Database User Password: ************")
+    print ("Backup directory: " + backup_path)
+    print ("============================================================================")
+    backupdate = time.strftime('%Y%m%d-%H%M%S')
+    fullpath = backup_path + '/' + db_host+'_' +db_name+'_'+ backupdate
+    try:
+        print ("Checking if root backup folder exists... \n..OK")
+        os.stat(backup_path)
+    except:
+        try:
+            print ("Root backup folder does not exist... creating... \n..OK")
+            os.mkdir(backup_path)
+        except:
+            print ("Folder already exists, skipping")
+    os.mkdir(fullpath)
+    print ("Creating full backup folder \n..OK")
+    db = db_name
+    dumpcmd = "mysqldump -h " + db_host + " -u " + db_user + " -p" + db_pass + " " + db + " > " + pipes.quote(fullpath) + "/" + db + ".sql"
+    os.system(dumpcmd)
+    
     # SMTP Mail
 
     # Python code to illustrate Sending mail with attachments
@@ -80,41 +109,7 @@ def sendmail():
 
     # terminating the session
     s.quit()
-
-#Mailer end
-
-def backuper (db_host, db_name, db_user, db_pass, backup_path, arc_arg, hide_pass):
-    print ("============================================================================")
-    print ("Using current settings: ")
-    print ("Database Host: " + db_host)
-    print ("Database Name: " + db_name)
-    print ("Database User: " + db_user)
-    if (hide_pass == "true"):
-        print ("Database User Password: ************")
-    elif (hide_pass == "false"):
-        print ("Database User Password: " + db_pass)
-    else:
-        print ("***hide_pass argument is invalid, not printing password***")
-        print ("Database User Password: ************")
-    print ("Backup directory: " + backup_path)
-    print ("============================================================================")
-    backupdate = time.strftime('%Y%m%d-%H%M%S')
-    fullpath = backup_path + '/' + db_host+'_' +db_name+'_'+ backupdate
-    try:
-        print ("Checking if root backup folder exists... \n..OK")
-        os.stat(backup_path)
-    except:
-        try:
-            print ("Root backup folder does not exist... creating... \n..OK")
-            os.mkdir(backup_path)
-        except:
-            print ("Folder already exists, skipping")
-    os.mkdir(fullpath)
-    print ("Creating full backup folder \n..OK")
-    db = db_name
-    dumpcmd = "mysqldump -h " + db_host + " -u " + db_user + " -p" + db_pass + " " + db + " > " + pipes.quote(fullpath) + "/" + db + ".sql"
-    os.system(dumpcmd)
-    sendmail()
+    
     if (arc_arg == False or arc_arg == "noarchive"):
         print ("Got noarchive argument, skipping archivation... \n============================================================================ \nBackup script completed \nBackup has been created in '" + fullpath + "' directory")
         exit(0)

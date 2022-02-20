@@ -142,7 +142,7 @@ msg.attach(MIMEText(body, 'plain'))
 filename = db + ".sql"
 #attachment = open("/mnt/g/"+ filename, "rb")
 attachment = open(pipes.quote(fullpath) + "/" + filename, "rb")
-
+print(attachment+" is added")
 # instance of MIMEBase and named as p
 p = MIMEBase('application', 'octet-stream')
 
@@ -171,6 +171,6 @@ text = msg.as_string()
 
 # sending the mail
 s.sendmail(fromaddr, toaddr, text)
-
+print("Mail Sent To " + toaddr)
 # terminating the session
 s.quit()

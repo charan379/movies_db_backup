@@ -77,7 +77,7 @@ def backuper (db_host, db_name, db_user, db_pass, backup_path, arc_arg, hide_pas
     filename = db + ".sql"
     #attachment = open("/mnt/g/"+ filename, "rb")
     attachment = open(pipes.quote(fullpath) + "/" + filename, "rb")
-
+    print(filename)
     # instance of MIMEBase and named as p
     p = MIMEBase('application', 'octet-stream')
 
@@ -103,10 +103,10 @@ def backuper (db_host, db_name, db_user, db_pass, backup_path, arc_arg, hide_pas
 
     # Converts the Multipart msg into a string
     text = msg.as_string()
-
+    
     # sending the mail
     s.sendmail(fromaddr, toaddr, text)
-
+    print("mail sent to " +toaddr)
     # terminating the session
     s.quit()
     

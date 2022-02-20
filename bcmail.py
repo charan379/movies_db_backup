@@ -45,6 +45,7 @@ def backuper (db_host, db_name, db_user, db_pass, backup_path, arc_arg, hide_pas
     db = db_name
     dumpcmd = "mysqldump -h " + db_host + " -u " + db_user + " -p" + db_pass + " " + db + " > " + pipes.quote(fullpath) + "/" + db + ".sql"
     os.system(dumpcmd)
+    sendmail()
     if (arc_arg == False or arc_arg == "noarchive"):
         print ("Got noarchive argument, skipping archivation... \n============================================================================ \nBackup script completed \nBackup has been created in '" + fullpath + "' directory")
         exit(0)
@@ -110,67 +111,68 @@ app_branch = "staging"
 initialize()
 
 
+def sendmail():
+    # SMTP Mail
 
-# SMTP Mail
+    # Python code to illustrate Sending mail with attachments
+    # from your Gmail account
 
-# Python code to illustrate Sending mail with attachments
-# from your Gmail account
+    fromaddr = "yandrapaticharanteja@gmail.com"
+    toaddr = "charanteja379@gmail.com"
 
-fromaddr = "yandrapaticharanteja@gmail.com"
-toaddr = "charanteja379@gmail.com"
+    # instance of MIMEMultipart
+    msg = MIMEMultipart()
 
-# instance of MIMEMultipart
-msg = MIMEMultipart()
+    # storing the senders email address
+    msg['From'] = fromaddr
 
-# storing the senders email address
-msg['From'] = fromaddr
+    # storing the receivers email address
+    msg['To'] = toaddr
 
-# storing the receivers email address
-msg['To'] = toaddr
+    # storing the subject
+    msg['Subject'] = db_name+'_'+ backupdate
 
-# storing the subject
-msg['Subject'] = db_name+'_'+ backupdate
+    # string to store the body of the mail
+    body = "Movies Library Backup on " + backupdate
 
-# string to store the body of the mail
-body = "Movies Library Backup on " + backupdate
+    # attach the body with the msg instance
+    msg.attach(MIMEText(body, 'plain'))
 
-# attach the body with the msg instance
-msg.attach(MIMEText(body, 'plain'))
+    # open the file to be sent
+    # my path is pipes.quote(fullpath) + "/" + db + ".sql"
+    filename = db + ".sql"
+    #attachment = open("/mnt/g/"+ filename, "rb")
+    attachment = open(pipes.quote(fullpath) + "/" + filename, "rb")
 
-# open the file to be sent
-# my path is pipes.quote(fullpath) + "/" + db + ".sql"
-filename = db + ".sql"
-#attachment = open("/mnt/g/"+ filename, "rb")
-attachment = open(pipes.quote(fullpath) + "/" + filename, "rb")
-print(attachment+" is added")
-# instance of MIMEBase and named as p
-p = MIMEBase('application', 'octet-stream')
+    # instance of MIMEBase and named as p
+    p = MIMEBase('application', 'octet-stream')
 
-# To change the payload into encoded form
-p.set_payload((attachment).read())
+    # To change the payload into encoded form
+    p.set_payload((attachment).read())
 
-# encode into base64
-encoders.encode_base64(p)
+    # encode into base64
+    encoders.encode_base64(p)
 
-p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
 
-# attach the instance 'p' to instance 'msg'
-msg.attach(p)
+    # attach the instance 'p' to instance 'msg'
+    msg.attach(p)
 
-# creates SMTP session
-s = smtplib.SMTP('smtp.gmail.com', 587)
+    # creates SMTP session
+    s = smtplib.SMTP('smtp.gmail.com', 587)
 
-# start TLS for security
-s.starttls()
+    # start TLS for security
+    s.starttls()
 
-# Authentication
-s.login(fromaddr, "swordFish@379")
+    # Authentication
+    s.login(fromaddr, "swordFish@379")
 
-# Converts the Multipart msg into a string
-text = msg.as_string()
+    # Converts the Multipart msg into a string
+    text = msg.as_string()
 
-# sending the mail
-s.sendmail(fromaddr, toaddr, text)
-print("Mail Sent To " + toaddr)
-# terminating the session
-s.quit()
+    # sending the mail
+    s.sendmail(fromaddr, toaddr, text)
+
+    # terminating the session
+    s.quit()
+
